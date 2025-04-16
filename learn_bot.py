@@ -1,6 +1,7 @@
 import os
 import requests
 import openai
+import re
 from flask import Flask
 from datetime import date
 from dotenv import load_dotenv
