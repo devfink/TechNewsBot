@@ -11,6 +11,20 @@ load_dotenv()
 # ==== Flask App ====
 app = Flask(__name__)
 
+# ==== Funktion zum Entfernen von Emojis ====
+def remove_emojis(text):
+    emoji_pattern = re.compile("["
+        u"\U0001F600-\U0001F64F"  # Emoticons
+        u"\U0001F300-\U0001F5FF"  # Symbole & Piktogramme
+        u"\U0001F680-\U0001F6FF"  # Transport & Karten
+        u"\U0001F1E0-\U0001F1FF"  # Flaggen
+        u"\U00002700-\U000027BF"  # Verschiedene Symbole
+        u"\U0001F900-\U0001F9FF"  # Zusätzliche Symbole
+        u"\U0001FA70-\U0001FAFF"  # Weitere Symbole
+        u"\U00002600-\U000026FF"  # Wetter usw.
+        "]+", flags=re.UNICODE)
+    return emoji_pattern.sub(r'', text)
+
 # ==== Konfiguration ====
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 TELEGRAM_BOT_TOKEN = os.getenv("UX_TELEGRAM_BOT_TOKEN")
@@ -35,15 +49,30 @@ def save_title(title: str):
 
 # ==== Telegram senden ====
 def send_to_telegram(text):
-    message = f"\ud83d\udcd8 UX-Lernimpuls – {date.today().strftime('%d.%m.%Y')}\n\n{text}"
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    
+    clean_text = remove_emojis(text)
+
     payload = {
         "chat_id": CHAT_ID,
-        "text": message,
+        "text": clean_text,
         "disable_web_page_preview": True
     }
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+
     response = requests.post(url, data=payload)
-    print("\ud83d\udce4 Telegram gesendet:", response.status_code)
+    print("📤 Telegram senden…")
+    print("Statuscode:", response.status_code)
+    print("Antwort:", response.text)
+
+    if response.status_code != 200:
+        print("⚠️ Telegram-Fehler – versuche Klartext...")
+        fallback_payload = {
+            "chat_id": CHAT_ID,
+            "text": clean_text
+        }
+        fallback_response = requests.post(url, data=fallback_payload)
+        print("Fallback Statuscode:", fallback_response.status_code)
+
 
 # ==== GPT-Generierung ====
 def generate_lesson():
