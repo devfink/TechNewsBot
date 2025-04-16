@@ -101,16 +101,24 @@ def summarize_top_article(source, articles):
             f"Link: {a['link']}\n\n"
         )
     prompt = (
-        f"Du bist ein deutschsprachiger Tech-News-Kurator. Hier sind mehrere neue Artikel aus der Quelle '{source}'. "
-        f"Wähle den relevantesten Artikel für Tech-, UX- oder KI-Teams.\n\n"
-        f"Formatiere deine Antwort im einfachen Klartext (kein Markdown!), exakt in diesem Format:\n\n"
-        f"Kategorie: KI oder UX oder Tech\n"
-        f"Titel: <Titel des Artikels>\n"
-        f"Zusammenfassung: 1–3 Sätze über den Inhalt und warum er relevant ist\n"
-        f"Quelle: <Quellenname> – <Link>\n\n"
-        f"Nur ein Artikel. Kein Intro, keine Aufzählung, kein *fett*, keine Klammern, keine Anführungszeichen.\n\n"
-        f"Hier die Artikel:\n\n{all_text}"
-    )
+    f"Du bist ein deutschsprachiger Tech-News-Kurator für Teams in Digitalagenturen, Startups und KI-/UX-Produkten.\n"
+    f"Hier sind mehrere neue Artikel aus der Quelle '{source}'.\n\n"
+    f"Deine Aufgabe:\n"
+    f"1. Analysiere die Artikel.\n"
+    f"2. Wähle exakt einen Artikel mit dem höchsten strategischen oder produktrelevanten Wert für Tech-, UX- oder KI-Teams.\n"
+    f"3. Ignoriere Artikel zu Konsumentenhardware, Reviews, E-Autos, Tests, Preisen oder Verfügbarkeiten.\n\n"
+    f"Definition von Relevanz:\n"
+    f"– Neues Tool, Framework oder Feature\n"
+    f"– Veränderung im Design-, Entwicklungs- oder KI-Workflow\n"
+    f"– Forschung mit praktischem Potenzial\n"
+    f"– Politische/ökonomische Entscheidungen mit Tech-Impact\n\n"
+    f"Format (kein Markdown!):\n"
+    f"Kategorie: KI oder UX oder Tech\n"
+    f"Titel: <Titel des Artikels>\n"
+    f"Zusammenfassung: 1–3 Sätze über Inhalt und Relevanz\n"
+    f"Quelle: <Quellenname> – <Link>\n\n"
+    f"Hier die Artikel:\n\n{all_text}"
+)
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
