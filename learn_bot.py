@@ -4,7 +4,7 @@ import os
 from datetime import date
 
 # === UX-Bot Umgebungsvariablen ===
-OPENAI_API_KEY = os.getenv("UX_OPENAI_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 TELEGRAM_BOT_TOKEN = os.getenv("UX_TELEGRAM_BOT_TOKEN")
 CHAT_ID = os.getenv("UX_TELEGRAM_CHAT_ID")
 
