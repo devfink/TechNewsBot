@@ -69,7 +69,7 @@ def generate_lesson():
 # ==== Endpunkte ====
 @app.route("/")
 def home():
-    return "\ud83d\udc4b UX-Bot ist online."
+    return "UX-Bot ist online."
 
 @app.route("/run")
 def run_lesson():
@@ -78,11 +78,11 @@ def run_lesson():
 
     if was_already_sent(title):
         print("\ud83d\udd04 Bereits gesendet:", title)
-        return "⚠️ Thema bereits gesendet. Kein Duplikat."
+        return "Thema bereits gesendet. Kein Duplikat."
 
     send_to_telegram(text)
     save_title(title)
-    return "✅ UX-Lektion gesendet."
+    return "UX-Lektion gesendet."
 
 # ==== Server starten ====
 if __name__ == "__main__":
