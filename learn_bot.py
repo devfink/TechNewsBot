@@ -2,6 +2,7 @@ import os
 import requests
 import openai
 import re
+import difflib
 from flask import Flask
 from datetime import date
 from dotenv import load_dotenv
@@ -31,27 +32,29 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 TELEGRAM_BOT_TOKEN = os.getenv("UX_TELEGRAM_BOT_TOKEN")
 CHAT_ID = os.getenv("UX_TELEGRAM_CHAT_ID")
 
-# ==== OpenAI Client ====
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
 # ==== Verlauf speichern ====
 HISTORY_FILE = "ux_sent_titles.txt"
 
-def was_already_sent(title: str) -> bool:
+def is_too_similar_to_recent_topics(new_text, threshold=0.8):
     if not os.path.exists(HISTORY_FILE):
         return False
     with open(HISTORY_FILE, "r", encoding="utf-8") as f:
-        history = f.read().splitlines()
-    return title.strip() in history
+        recent = f.read().splitlines()
+    for old in recent[-10:]:
+        similarity = difflib.SequenceMatcher(None, new_text, old.strip()).ratio()
+        if similarity > threshold:
+            return True
+    return False
 
-def save_title(title: str):
+def save_current_topic(text):
     with open(HISTORY_FILE, "a", encoding="utf-8") as f:
-        f.write(title.strip() + "\n")
+        f.write(text.strip() + "\n")
 
 # ==== Telegram senden ====
 def send_to_telegram(text):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    
     clean_text = remove_emojis(text)
 
     payload = {
@@ -65,16 +68,6 @@ def send_to_telegram(text):
     print("Statuscode:", response.status_code)
     print("Antwort:", response.text)
 
-    if response.status_code != 200:
-        print("⚠️ Telegram-Fehler – versuche Klartext...")
-        fallback_payload = {
-            "chat_id": CHAT_ID,
-            "text": clean_text
-        }
-        fallback_response = requests.post(url, data=fallback_payload)
-        print("Fallback Statuscode:", fallback_response.status_code)
-
-
 # ==== GPT-Generierung ====
 def generate_lesson():
     prompt = (
@@ -87,8 +80,9 @@ def generate_lesson():
         "2. Eine verständliche Erklärung in 3–6 Sätzen mit Praxisbeispiel\n"
         "3. Optional: Ein Tipp oder Reflexionsfrage\n"
         "4. Optional: Ein hilfreicher Link (Blog, Tool, Artikel)\n\n"
-        "Sprache: Locker, aber professionell. Keine Einleitungen wie 'heute geht es um…'. Zielgruppe: UX-Praktiker:innen mit 1–5 Jahren Erfahrung."
-        "Vermeide bitte Themen, die sich stark mit den letzten Antworten überschneiden oder sehr ähnlich sind. Biete stattdessen neue, interessante Perspektiven oder Konzepte aus dem Bereich UX und UX Research."
+        "Sprache: Locker, aber professionell. Keine Einleitungen wie 'heute geht es um…'. Zielgruppe: UX-Praktiker:innen mit 1–5 Jahren Erfahrung. "
+        "Vermeide bitte Themen, die sich stark mit den letzten Antworten überschneiden oder sehr ähnlich sind. "
+        "Biete stattdessen neue, interessante Perspektiven oder Konzepte aus dem Bereich UX und UX Research."
     )
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -98,32 +92,4 @@ def generate_lesson():
     return response.choices[0].message.content.strip()
 
 # ==== Endpunkte ====
-@app.route("/")
-def home():
-    return "UX-Bot ist online."
-
-@app.route("/run")
-def run_lesson():
-    text = generate_lesson()
-    if is_too_similar_to_recent_topics(text):
-        print("⚠️ Thema wurde kürzlich behandelt, wird übersprungen.")
-        return "🚫 Thema wiederholt sich, wurde nicht gesendet."
-    else:
-        save_current_topic(text)
-        send_to_telegram(text)
-        return "✅ Thema wurde gesendet."
-
-
-    title = text.splitlines()[0].strip()
-
-    if was_already_sent(title):
-        print("\ud83d\udd04 Bereits gesendet:", title)
-        return "Thema bereits gesendet. Kein Duplikat."
-
-    send_to_telegram(text)
-    save_title(title)
-    return "UX-Lektion gesendet."
-
-# ==== Server starten ====
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=81)
+@app.route
