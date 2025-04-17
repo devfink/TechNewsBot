@@ -88,6 +88,7 @@ def generate_lesson():
         "3. Optional: Ein Tipp oder Reflexionsfrage\n"
         "4. Optional: Ein hilfreicher Link (Blog, Tool, Artikel)\n\n"
         "Sprache: Locker, aber professionell. Keine Einleitungen wie 'heute geht es um…'. Zielgruppe: UX-Praktiker:innen mit 1–5 Jahren Erfahrung."
+        "Vermeide bitte Themen, die sich stark mit den letzten Antworten überschneiden oder sehr ähnlich sind. Biete stattdessen neue, interessante Perspektiven oder Konzepte aus dem Bereich UX und UX Research."
     )
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
@@ -104,6 +105,12 @@ def home():
 @app.route("/run")
 def run_lesson():
     text = generate_lesson()
+    if is_too_similar_to_recent_topics(text):
+    print("⚠️ Thema wurde kürzlich behandelt, wird übersprungen.")
+    return "🚫 Thema wiederholt sich, wurde nicht gesendet."
+else:
+    save_current_topic(text)
+
     title = text.splitlines()[0].strip()
 
     if was_already_sent(title):
