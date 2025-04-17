@@ -92,4 +92,21 @@ def generate_lesson():
     return response.choices[0].message.content.strip()
 
 # ==== Endpunkte ====
-@app.route
+
+@app.route("/")
+def home():
+    return "UX-Bot ist online."
+
+@app.route("/run")
+def run_lesson():
+    text = generate_lesson()
+    
+    title = text.splitlines()[0].strip()
+
+    if was_already_sent(title):
+        print("🔁 Bereits gesendet:", title)
+        return "🚫 Thema bereits gesendet, wird übersprungen."
+
+    send_to_telegram(text)
+    save_title(title)
+    return "✅ UX-Lektion wurde gesendet."
