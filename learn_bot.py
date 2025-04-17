@@ -77,7 +77,18 @@ def send_to_telegram(text):
 
 # ==== GPT-Generierung ====
 def generate_lesson():
+    recent_titles = []
+if os.path.exists(HISTORY_FILE):
+    with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+        recent_titles = f.read().splitlines()[-5:]  # Letzte 5 z. B.
+
+recent_prompt_addition = (
+    "Vermeide bitte diese zuletzt behandelten Themen: "
+    + ", ".join(recent_titles)
+    + ".\n\n"
+)
     prompt = (
+        recent_prompt_addition +
         "Du bist ein erfahrener deutschsprachiger UX-Mentor. "
         "Sende eine tägliche Mini-Lektion für UX-Teams (Designer:innen, Researchers, Produktleute), die sich weiterentwickeln wollen.\n\n"
         "Wechsle die Themen regelmäßig zwischen UX-Design, UX-Research, Usability, Microcopy, Accessibility, Prototyping oder UX-Strategie. "
