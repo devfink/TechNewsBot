@@ -17,13 +17,13 @@ app = Flask(__name__)
 def remove_emojis(text):
     emoji_pattern = re.compile("["
         u"\U0001F600-\U0001F64F"  # Emoticons
-        u"\U0001F300-\U0001F5FF"  # Symbole & Piktogramme
-        u"\U0001F680-\U0001F6FF"  # Transport & Karten
-        u"\U0001F1E0-\U0001F1FF"  # Flaggen
-        u"\U00002700-\U000027BF"  # Verschiedene Symbole
-        u"\U0001F900-\U0001F9FF"  # Zusätzliche Symbole
-        u"\U0001FA70-\U0001FAFF"  # Weitere Symbole
-        u"\U00002600-\U000026FF"  # Wetter usw.
+        u"\U0001F300-\U0001F5FF"
+        u"\U0001F680-\U0001F6FF"
+        u"\U0001F1E0-\U0001F1FF"
+        u"\U00002700-\U000027BF"
+        u"\U0001F900-\U0001F9FF"
+        u"\U0001FA70-\U0001FAFF"
+        u"\U00002600-\U000026FF"
         "]+", flags=re.UNICODE)
     return emoji_pattern.sub(r'', text)
 
@@ -34,23 +34,30 @@ CHAT_ID = os.getenv("UX_TELEGRAM_CHAT_ID")
 
 client = openai.OpenAI(api_key=OPENAI_API_KEY)
 
-# ==== Verlauf speichern ====
+# ==== Verlauf ====
 HISTORY_FILE = "ux_sent_titles.txt"
 
-def is_too_similar_to_recent_topics(new_text, threshold=0.8):
+def was_already_sent(title: str) -> bool:
+    if not os.path.exists(HISTORY_FILE):
+        return False
+    with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+        history = f.read().splitlines()
+    return title.strip() in history
+
+def save_title(title: str):
+    with open(HISTORY_FILE, "a", encoding="utf-8") as f:
+        f.write(title.strip() + "\n")
+
+def is_too_similar_to_recent_topics(new_title, threshold=0.8):
     if not os.path.exists(HISTORY_FILE):
         return False
     with open(HISTORY_FILE, "r", encoding="utf-8") as f:
         recent = f.read().splitlines()
     for old in recent[-10:]:
-        similarity = difflib.SequenceMatcher(None, new_text, old.strip()).ratio()
+        similarity = difflib.SequenceMatcher(None, new_title.lower(), old.lower()).ratio()
         if similarity > threshold:
             return True
     return False
-
-def save_current_topic(text):
-    with open(HISTORY_FILE, "a", encoding="utf-8") as f:
-        f.write(text.strip() + "\n")
 
 # ==== Telegram senden ====
 def send_to_telegram(text):
@@ -92,7 +99,6 @@ def generate_lesson():
     return response.choices[0].message.content.strip()
 
 # ==== Endpunkte ====
-
 @app.route("/")
 def home():
     return "UX-Bot ist online."
@@ -100,13 +106,16 @@ def home():
 @app.route("/run")
 def run_lesson():
     text = generate_lesson()
-    
     title = text.splitlines()[0].strip()
 
-    if was_already_sent(title):
-        print("🔁 Bereits gesendet:", title)
-        return "🚫 Thema bereits gesendet, wird übersprungen."
+    if was_already_sent(title) or is_too_similar_to_recent_topics(title):
+        print("🔁 Thema zu ähnlich oder bereits gesendet:", title)
+        return "🚫 Thema wurde übersprungen."
 
     send_to_telegram(text)
     save_title(title)
     return "✅ UX-Lektion wurde gesendet."
+
+# ==== Server starten ====
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=81)
