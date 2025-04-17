@@ -90,17 +90,17 @@ def generate_lesson():
     prompt = (
         recent_prompt_addition +
         "Du bist ein erfahrener deutschsprachiger UX-Mentor. "
-        "Sende eine tägliche Mini-Lektion für UX-Teams (Designer:innen, Researchers, Produktleute), die sich weiterentwickeln wollen.\n\n"
-        "Wechsle die Themen regelmäßig zwischen UX-Design, UX-Research, Usability, Microcopy, Accessibility, Prototyping oder UX-Strategie. "
-        "Greife nicht mehrmals pro Woche das gleiche Thema auf.\n\n"
+        "Erstelle **genau eine** tägliche Mini-Lektion für UX-Teams (Designer:innen, Researchers, Produktleute), die sich weiterentwickeln wollen.\n\n"
+        "Die Themen sollen sich regelmäßig abwechseln: UX-Design, UX-Research, Usability, Microcopy, Accessibility, Prototyping oder UX-Strategie. "
+        "Wiederhole kein Thema mehrmals pro Woche.\n\n"
         "Format:\n"
         "1. Ein klarer Titel (ohne Anführungszeichen)\n"
         "2. Eine verständliche Erklärung in 3–6 Sätzen mit Praxisbeispiel\n"
-        "3. Optional: Ein Tipp oder Reflexionsfrage\n"
+        "3. Optional: Ein Tipp oder eine Reflexionsfrage\n"
         "4. Optional: Ein hilfreicher Link (Blog, Tool, Artikel)\n\n"
-        "Sprache: Locker, aber professionell. Keine Einleitungen wie 'heute geht es um…'. Zielgruppe: UX-Praktiker:innen mit 1–5 Jahren Erfahrung. "
-        "Vermeide bitte Themen, die sich stark mit den letzten Antworten überschneiden oder sehr ähnlich sind. "
-        "Biete stattdessen neue, interessante Perspektiven oder Konzepte aus dem Bereich UX und UX Research."
+        "Sprache: Locker, aber professionell. Keine Einleitungen wie 'heute geht es um…'. "
+        "Zielgruppe: UX-Praktiker:innen mit 1–5 Jahren Erfahrung.\n\n"
+        "Gib nur **eine einzelne Lektion** zurück, keine Liste und keine Aufzählung."
     )
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
