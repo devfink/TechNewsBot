@@ -106,10 +106,13 @@ def home():
 def run_lesson():
     text = generate_lesson()
     if is_too_similar_to_recent_topics(text):
-    print("⚠️ Thema wurde kürzlich behandelt, wird übersprungen.")
-    return "🚫 Thema wiederholt sich, wurde nicht gesendet."
-else:
-    save_current_topic(text)
+        print("⚠️ Thema wurde kürzlich behandelt, wird übersprungen.")
+        return "🚫 Thema wiederholt sich, wurde nicht gesendet."
+    else:
+        save_current_topic(text)
+        send_to_telegram(text)
+        return "✅ Thema wurde gesendet."
+
 
     title = text.splitlines()[0].strip()
 
