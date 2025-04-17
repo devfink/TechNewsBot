@@ -78,15 +78,15 @@ def send_to_telegram(text):
 # ==== GPT-Generierung ====
 def generate_lesson():
     recent_titles = []
-if os.path.exists(HISTORY_FILE):
-    with open(HISTORY_FILE, "r", encoding="utf-8") as f:
-        recent_titles = f.read().splitlines()[-5:]  # Letzte 5 z. B.
+    if os.path.exists(HISTORY_FILE):
+        with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+            recent_titles = f.read().splitlines()[-5:]
 
-recent_prompt_addition = (
-    "Vermeide bitte diese zuletzt behandelten Themen: "
-    + ", ".join(recent_titles)
-    + ".\n\n"
-)
+    recent_prompt_addition = (
+        "Vermeide bitte diese zuletzt behandelten Themen: "
+        + ", ".join(recent_titles)
+        + ".\n\n"
+    )
     prompt = (
         recent_prompt_addition +
         "Du bist ein erfahrener deutschsprachiger UX-Mentor. "
