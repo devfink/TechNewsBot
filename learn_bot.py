@@ -125,7 +125,7 @@ def run_lesson():
 
         if not is_too_similar_to_recent_topics(title):
             send_to_telegram(text)
-            save_current_topic(title)
+            save_title(title)
             return f"✅ UX-Lektion wurde gesendet (Versuch {attempts + 1})."
         
         print(f"🔁 Thema zu ähnlich oder bereits gesendet (Versuch {attempts + 1}): {title}")
