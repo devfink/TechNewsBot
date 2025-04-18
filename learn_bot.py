@@ -116,16 +116,22 @@ def home():
 
 @app.route("/run")
 def run_lesson():
-    text = generate_lesson()
-    title = text.splitlines()[0].strip()
+    max_attempts = 3
+    attempts = 0
 
-    if was_already_sent(title) or is_too_similar_to_recent_topics(title):
-        print("🔁 Thema zu ähnlich oder bereits gesendet:", title)
-        return "🚫 Thema wurde übersprungen."
+    while attempts < max_attempts:
+        text = generate_lesson()
+        title = text.splitlines()[0].strip()
 
-    send_to_telegram(text)
-    save_title(title)
-    return "✅ UX-Lektion wurde gesendet."
+        if not is_too_similar_to_recent_topics(title):
+            send_to_telegram(text)
+            save_current_topic(title)
+            return f"✅ UX-Lektion wurde gesendet (Versuch {attempts + 1})."
+        
+        print(f"🔁 Thema zu ähnlich oder bereits gesendet (Versuch {attempts + 1}): {title}")
+        attempts += 1
+
+    return "🚫 Kein geeignetes Thema gefunden nach mehreren Versuchen."
 
 # ==== Server starten ====
 if __name__ == "__main__":
