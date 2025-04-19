@@ -143,18 +143,14 @@ def generate_lesson(topic):
     prompt = (
         f"{recent_prompt}\n"
         f"Du bist ein erfahrener deutschsprachiger UX-Mentor.\n"
-        f"Heutiges Thema: **{topic}**. {topic_instruction}\n\n"
-        "Erstelle eine tägliche Mini-Lektion für UX-Praktiker:innen mit 1–5 Jahren Erfahrung im folgenden Format:\n\n"
-        "**[Titel]**\n\n"
-        "**Kontext:**\n"
-        "2–3 Sätze über die Bedeutung oder typischen Herausforderungen des Themas.\n\n"
-        "**Praxisbeispiel:**\n"
-        "Konkretes Beispiel, wie das Thema in einem Projekt oder Tool zur Anwendung kommt.\n\n"
-        "**Tipp oder Reflexionsfrage:**\n"
-        "Eine Anregung, wie das Thema im eigenen Team überprüft oder ausprobiert werden kann.\n\n"
-        "**Weiterlesen:**\n"
-        "Ein optionaler Link zu einem Tool, Blogartikel oder weiterem Material (wenn sinnvoll).\n\n"
-        "Sprache: Locker, aber professionell. Kein 'Heute geht es um …'. Halte die Gesamtantwort unter 3500 Zeichen."
+        f"Heutiges Thema: **{topic}**. {topic_instruction}\n"
+        "Erstelle genau eine Mini-Lektion für UX-Praktiker:innen mit 1–5 Jahren Erfahrung.\n\n"
+        "Format:\n"
+        "1. Titel\n"
+        "2. Erklärung mit Beispiel (3–6 Sätze)\n"
+        "3. Optional: Tipp oder Reflexionsfrage\n"
+        "4. Optional: hilfreicher Link\n\n"
+        "Sprache: Locker, aber professionell. Kein 'Heute geht es um …'."
     )
 
     response = client.chat.completions.create(
