@@ -1,0 +1,192 @@
+{
+  "UX Design": {
+    "Beginner": [
+      "Was ist User Experience?",
+      "Grundlagen guter UX",
+      "5 Prinzipien von Nielsen",
+      "Mobile First Design",
+      "Design Thinking Einführung",
+      "Wireframing Basics",
+      "Visuelle Hierarchie",
+      "UX vs. UI – Unterschiede",
+      "Feedback und Affordance",
+      "Konsistenz im Interface Design"
+    ],
+    "Intermediate": [
+      "Design Patterns in der Praxis",
+      "Atomic Design",
+      "Dark Patterns vermeiden",
+      "Persona-basierte Gestaltung",
+      "Navigation & Informationsarchitektur",
+      "Gestaltgesetze im UI Design",
+      "Fehlermeldungen gestalten",
+      "Usability Heuristiken anwenden",
+      "Responsive Design Strategien",
+      "Motion Design für UX"
+    ],
+    "Advanced": [
+      "UX Metriken & Erfolgsmessung",
+      "Ethik im UX Design",
+      "DesignOps in großen Teams",
+      "AI-gestütztes Interface Design",
+      "Accessibility beyond Basics",
+      "UX Writing Guidelines",
+      "UX Audits & Reviews",
+      "Design Systems skalieren",
+      "Behavioral Design",
+      "UX für Emerging Tech (AR/VR/Voice)"
+    ]
+  },
+  "UX Research": {
+    "Beginner": [
+      "Was ist UX Research?",
+      "Qualitativ vs. quantitativ",
+      "User Interviews planen",
+      "Fragebögen gestalten",
+      "Usability Tests durchführen",
+      "Beobachtungstechniken",
+      "Think-Aloud-Methode",
+      "Einführung in Analytics",
+      "Recruiting von Testpersonen",
+      "Research Ethik & Datenschutz"
+    ],
+    "Intermediate": [
+      "Personas auf Basis von Research",
+      "Card Sorting & IA Testing",
+      "Remote UX Research Tools",
+      "Mixed Methods Research",
+      "Surveys sinnvoll einsetzen",
+      "Research Repository anlegen",
+      "Jobs to be Done Framework",
+      "Field Studies planen",
+      "Research Sprints durchführen",
+      "Bias in Research erkennen"
+    ],
+    "Advanced": [
+      "Advanced Data Synthesis",
+      "Stakeholder Alignment im Research",
+      "Research Ops aufbauen",
+      "Predictive UX mit Analytics",
+      "Experiment Design",
+      "Contextual Inquiry",
+      "Ethnografische Methoden",
+      "Research in agilen Umgebungen",
+      "Research für AI/ML Interfaces",
+      "Research mit Edge-Cases"
+    ]
+  },
+  "UI Design": {
+    "Beginner": [
+      "Grundlagen UI Design",
+      "Farbsysteme verstehen",
+      "Typografie für Interfaces",
+      "Abstände & Grid-Systeme",
+      "Komponentenbibliotheken nutzen",
+      "UI Tools: Figma, Sketch, XD",
+      "Design Tokens",
+      "Iconographie Basics",
+      "Barrierefreiheit im UI",
+      "Design Feedback geben"
+    ],
+    "Intermediate": [
+      "UI Animationen mit Figma",
+      "Microinteractions gestalten",
+      "Komponenten wiederverwendbar machen",
+      "Zustände im UI visualisieren",
+      "Scrollytelling & Visual Storytelling",
+      "Multimodale Interfaces",
+      "Data-Driven UI Design",
+      "Toolübergreifendes Prototyping",
+      "Color Accessibility prüfen",
+      "Design QA in der Dev-Kette"
+    ],
+    "Advanced": [
+      "Design Tokens automatisieren",
+      "Design Handoff optimieren",
+      "UI für komplexe Datenvisualisierung",
+      "UI in Enterprise-Anwendungen",
+      "High-Performance UI",
+      "Augmented UI Design",
+      "Design für verschiedene Devices",
+      "Systematische Designreviews",
+      "UI Patterns dokumentieren",
+      "Dark Mode und thematische UIs"
+    ]
+  },
+  "Product Management / UX Strategy": {
+    "Beginner": [
+      "Was ist Product Thinking?",
+      "Stakeholder verstehen",
+      "Value Proposition Canvas",
+      "Roadmaps erstellen",
+      "MVP richtig planen",
+      "Feature Priorisierung",
+      "Customer Journey Mapping",
+      "Design Ziele definieren",
+      "UX KPIs einführen",
+      "Nutzerzentrierte Zieldefinition"
+    ],
+    "Intermediate": [
+      "OKRs im Produktteam",
+      "Business & UX Goals verbinden",
+      "Produktvision und UX",
+      "Crossfunktionale Zusammenarbeit",
+      "Design im Scrum-Prozess",
+      "Funnel Analyse verstehen",
+      "UX bei der Ideenbewertung",
+      "Impact Mapping",
+      "Innovation durch UX",
+      "Lean UX & Continuous Discovery"
+    ],
+    "Advanced": [
+      "Strategisches UX Management",
+      "Design Leadership",
+      "UX im Produktportfolio",
+      "ROI von UX zeigen",
+      "Experiment-getriebene Entwicklung",
+      "Vision-to-Execution Frameworks",
+      "Design Maturity Model",
+      "Design Culture etablieren",
+      "Plattformstrategie & UX",
+      "Ethik & Verantwortung im Produktdesign"
+    ]
+  },
+  "Grundlagen Künstliche Intelligenz": {
+    "Beginner": [
+      "Was ist Künstliche Intelligenz?",
+      "Begriffsklärung: KI vs. ML vs. Deep Learning",
+      "Anwendungsbeispiele von KI im Alltag",
+      "Stärken und Schwächen von KI",
+      "Chancen und Risiken im UX-Kontext",
+      "Trainingsdaten verstehen",
+      "Was ist ein Prompt?",
+      "Typische KI-Modelle (LLM, CV, Speech)",
+      "Bias und Fairness in KI-Systemen",
+      "KI & Datenschutz – Was ist wichtig?"
+    ],
+    "Intermediate": [
+      "Human-in-the-Loop: Was bedeutet das?",
+      "Prompt Engineering Basics",
+      "Explainable AI (XAI) verstehen",
+      "UX für KI-getriebene Interfaces",
+      "Bewertung von KI-Ausgaben",
+      "Datenannotation & Labeling",
+      "Kontextnutzung in Sprachmodellen",
+      "KI-Ethik & Richtlinien",
+      "User Trust in KI-Systeme",
+      "KI-Fehlermeldungen gestalten"
+    ],
+    "Advanced": [
+      "Prompt Engineering für UX-Use Cases",
+      "System Feedback & Confidence Scores",
+      "Conversational Interfaces designen",
+      "AI-Kollaborationstools für Design",
+      "Prototyping mit KI-Tools",
+      "Modellgrenzen UX-gerecht kommunizieren",
+      "Agent-basierte UX",
+      "KI-Metriken in der Produktentwicklung",
+      "Langfristige UX-Strategien mit KI",
+      "Zukunftsszenarien: KI & UX"
+    ]
+  }
+}
