@@ -1,8 +1,10 @@
 import os
+import json
 import requests
 import openai
 import re
 import difflib
+import random
 from flask import Flask
 from datetime import date
 from dotenv import load_dotenv
@@ -37,52 +39,40 @@ client = openai.OpenAI(api_key=OPENAI_API_KEY)
 HISTORY_FILE = "ux_sent_titles.txt"
 TEXT_HISTORY_FILE = "ux_sent_texts.txt"
 TOPIC_HISTORY_FILE = "ux_topic_history.txt"
+USED_TOPICS_FILE = "ux_used_curriculum_topics.txt"
+CURRICULUM_FILE = "ux_curriculum.json"
 
-# ==== Themen & Unterthemen ====
-UX_TOPICS = [
-    "UX-Design",
-    "UX-Research",
-    "Usability",
-    "Microcopy",
-    "Accessibility",
-    "Prototyping",
-    "UX-Strategie",
-    "Design Systeme",
-    "Interaction Design",
-    "Information Architecture",
-    "Service Design",
-    "UX-Metriken"
-]
+# ==== Curriculum laden ====
+with open(CURRICULUM_FILE, "r", encoding="utf-8") as f:
+    CURRICULUM = json.load(f)
 
-TOPIC_PROMPT_MAPPING = {
-    "UX-Design": "Wähle ein konkretes Designprinzip wie visuelle Hierarchie, Farbeinsatz oder Layout.",
-    "UX-Research": "Fokussiere auf ein Research-Format wie Interviews, Diary Studies oder Usability-Tests.",
-    "Usability": "Gehe auf gängige Usability-Heuristiken oder typische Stolperfallen ein.",
-    "Microcopy": "Zeige, wie man hilfreiche Mikrotexte schreibt, z. B. für Fehlermeldungen oder CTAs.",
-    "Accessibility": "Erkläre einen konkreten Aspekt wie Tastaturbedienbarkeit oder Farbkontraste.",
-    "Prototyping": "Fokussiere auf Tools, Methoden oder Testarten für Prototypen.",
-    "UX-Strategie": "Behandle strategische Themen wie UX-Roadmaps oder Stakeholder-Kommunikation.",
-    "Design Systeme": "Fokussiere auf Komponenten, Konsistenz und Wartbarkeit in Designsystemen.",
-    "Interaction Design": "Beschreibe z. B. States, Transitions oder Feedback bei Interaktionen.",
-    "Information Architecture": "Erkläre Strukturen, Navigation oder Card Sorting.",
-    "Service Design": "Gib Einblicke in Journey Maps, Touchpoints oder Backstage-Prozesse.",
-    "UX-Metriken": "Zeige Metriken wie Task Success Rate, NPS oder Time on Task auf."
-}
+def load_used_topics():
+    if not os.path.exists(USED_TOPICS_FILE):
+        return []
+    with open(USED_TOPICS_FILE, "r", encoding="utf-8") as f:
+        return f.read().splitlines()
 
-# ==== Helper ====
-def get_next_topic():
-    if not os.path.exists(TOPIC_HISTORY_FILE):
-        return UX_TOPICS[0]
-    with open(TOPIC_HISTORY_FILE, "r", encoding="utf-8") as f:
-        history = f.read().splitlines()
-    for topic in UX_TOPICS:
-        if topic not in history[-4:]:
-            return topic
-    return UX_TOPICS[0]
+def save_used_topic(topic_path):
+    with open(USED_TOPICS_FILE, "a", encoding="utf-8") as f:
+        f.write(topic_path + "\n")
 
-def save_topic(topic):
-    with open(TOPIC_HISTORY_FILE, "a", encoding="utf-8") as f:
-        f.write(topic + "\n")
+def get_all_topic_paths():
+    paths = []
+    for category, levels in CURRICULUM.items():
+        for level, topics in levels.items():
+            for topic in topics:
+                paths.append(f"{category} > {level} > {topic}")
+    return paths
+
+def get_next_curriculum_topic():
+    used = set(load_used_topics())
+    all_topics = get_all_topic_paths()
+    unused = [t for t in all_topics if t not in used]
+    if not unused:
+        return None
+    selected = random.choice(unused)
+    save_used_topic(selected)
+    return selected.split(" > ")[-1]
 
 def was_already_sent(title):
     if not os.path.exists(HISTORY_FILE):
@@ -119,6 +109,10 @@ def save_full_text(text):
     with open(TEXT_HISTORY_FILE, "a", encoding="utf-8") as f:
         f.write(text.strip() + "\n---\n")
 
+def save_topic(topic):
+    with open(TOPIC_HISTORY_FILE, "a", encoding="utf-8") as f:
+        f.write(topic + "\n")
+
 # ==== Telegram senden ====
 def send_to_telegram(text):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
@@ -132,27 +126,17 @@ def send_to_telegram(text):
 
 # ==== GPT-Generierung ====
 def generate_lesson(topic):
-    recent_titles = []
-    if os.path.exists(HISTORY_FILE):
-        with open(HISTORY_FILE, "r", encoding="utf-8") as f:
-            recent_titles = f.read().splitlines()[-5:]
-
-    topic_instruction = TOPIC_PROMPT_MAPPING.get(topic, "")
-    recent_prompt = "Vermeide diese zuletzt behandelten Titel: " + ", ".join(recent_titles) + ".\n"
-
     prompt = (
-        f"{recent_prompt}\n"
         f"Du bist ein erfahrener deutschsprachiger UX-Mentor.\n"
-        f"Heutiges Thema: **{topic}**. {topic_instruction}\n"
-        "Erstelle genau eine Mini-Lektion für UX-Praktiker:innen mit 1–5 Jahren Erfahrung.\n\n"
-        "Format:\n"
+        f"Heutiges Thema: {topic}\n"
+        "Erkläre das Thema praxisnah in einem Mini-Lektion Format:\n"
         "1. Titel\n"
-        "2. Erklärung mit Beispiel (3–6 Sätze)\n"
-        "3. Optional: Tipp oder Reflexionsfrage\n"
+        "2. Erklärung mit Beispiel (5–10 Sätze)\n"
+        "3. Optional: Verständliches Praxisbespiel\n"
+        "5. Optional: Cheat Sheet mit den wichtigsten Infos\n"
         "4. Optional: hilfreicher Link\n\n"
         "Sprache: Locker, aber professionell. Kein 'Heute geht es um …'."
     )
-
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[{"role": "user", "content": prompt}],
@@ -169,7 +153,10 @@ def home():
 def run_lesson():
     max_attempts = 4
     attempts = 0
-    topic = get_next_topic()
+    topic = get_next_curriculum_topic()
+
+    if not topic:
+        return "✅ Alle Curriculum-Themen wurden bereits verwendet."
 
     while attempts < max_attempts:
         text = generate_lesson(topic)
